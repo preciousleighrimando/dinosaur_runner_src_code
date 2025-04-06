@@ -605,8 +605,8 @@ def meduim_mode():
         # Display Level
         text_level = font.render(f"Level: {levels}", True, (0, 0, 0))
         SCREEN.blit(text_level, (10, 20))
-        text_difficulty = font.render(f"Difficulty: Medium", True, (0, 0, 0))
-        SCREEN.blit(text_difficulty, (800, 20))
+        # text_difficulty = font.render(f"Difficulty: Medium", True, (0, 0, 0))
+        # SCREEN.blit(text_difficulty, (800, 20))
         # text_speed = font.render(f"Game Speed: {game_speed}", True, (0, 0, 0))
         # SCREEN.blit(text_speed, (10, 80))
 
