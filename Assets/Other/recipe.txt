@@ -1,0 +1,152 @@
+import React, { useState } from 'react';
+import { FlatList, Text, StyleSheet, View, Image, TouchableOpacity, Alert, TextInput,} from 'react-native';
+
+const data = [
+  { 
+    id: '1', 
+    name: 'Sushi (寿司, すし, 鮨)', 
+    image: require('../../assets/images/sushi.jpg'), 
+    description: 'Sushi is a traditional Japanese dish consisting of vinegared rice (shari) combined with fresh seafood, vegetables, or eggs. Common types include nigiri (hand-pressed sushi), maki (rolled sushi), and sashimi (raw fish without rice). It is often served with soy sauce, wasabi, and pickled ginger.' 
+  },
+  { 
+    id: '2', 
+    name: 'Ramen (ラーメン)', 
+    image: require('../../assets/images/ramen.jpg'), 
+    description: 'Ramen is a Japanese noodle soup with a rich broth, typically made from pork, chicken, or miso. Popular varieties include shoyu (soy sauce-based), miso, shio (salt-based), and tonkotsu (pork bone broth). It is served with toppings such as chashu (braised pork), menma (bamboo shoots), eggs, and green onions.' 
+  },
+  { 
+    id: '3', 
+    name: 'Tempura (天ぷら)', 
+    image: require('../../assets/images/tempura.jpg'), 
+    description: 'Tempura is a dish consisting of seafood, meat, or vegetables that have been battered and deep-fried. It has a light, crispy texture and is typically served with dipping sauce (tentsuyu) and grated daikon radish. Shrimp, sweet potatoes, and eggplant are common ingredients used for tempura.' 
+  },
+  { 
+    id: '4', 
+    name: 'Takoyaki (たこ焼き)', 
+    image: require('../../assets/images/takoyaki.jpg'), 
+    description: 'Takoyaki are ball-shaped Japanese snacks made from a batter filled with diced octopus (tako), green onions, and tempura scraps. They are cooked in a special molded pan and served with takoyaki sauce, mayonnaise, dried seaweed, and bonito flakes. It is a popular street food in Osaka.' 
+  },
+  { 
+    id: '5', 
+    name: 'Okonomiyaki (お好み焼き)', 
+    image: require('../../assets/images/okonomiyaki.jpg'), 
+    description: 'Okonomiyaki is a savory Japanese pancake made with a batter of flour, eggs, shredded cabbage, and a variety of ingredients such as pork, seafood, or cheese. It is often topped with okonomiyaki sauce, mayonnaise, dried bonito flakes, and seaweed powder. The name means "grilled as you like," reflecting its customizable nature.' 
+  },
+  { 
+    id: '6', 
+    name: 'Tonkatsu (豚カツ, とんかつ, トンカツ)', 
+    image: require('../../assets/images/tonkatsu.jpg'), 
+    description: 'Tonkatsu is a breaded and deep-fried pork cutlet, typically served with shredded cabbage, rice, and miso soup. The two main types are fillet (ヒレ, hire) and loin (ロース, rōsu). It is commonly accompanied by a thick, sweet-savory sauce called tonkatsu sauce. Tonkatsu is also the base for dishes like katsudon (pork cutlet rice bowl) and katsukarē (pork cutlet curry).' 
+  },
+  { 
+    id: '7', 
+    name: 'Onigiri (おにぎり, 御握り)', 
+    image: require('../../assets/images/onigiri.jpg'), 
+    description: 'Onigiri, also known as rice balls, are a popular Japanese snack or meal made by shaping rice into triangular or cylindrical forms, often wrapped in nori (seaweed). They can be filled with ingredients like salted salmon, tuna with mayonnaise, pickled plum (umeboshi), or kombu (seaweed). Unlike sushi, onigiri uses plain rice instead of vinegared rice.' 
+  },
+  { 
+    id: '8', 
+    name: 'Miso Soup (味噌汁, みそしる)', 
+    image: require('../../assets/images/miso_soup.jpg'), 
+    description: 'Miso soup is a staple Japanese dish made by mixing miso paste (fermented soybean paste) with dashi broth. Common ingredients include tofu, wakame seaweed, green onions, and sometimes mushrooms or clams. It is often served as a side dish in Japanese meals, especially with rice and pickles.' 
+  },
+];
+
+
+const App = () => {
+  const [text, setText] = useState('');
+
+  const handlePress = (item) => {
+    Alert.alert(item.name, item.description);
+  };
+
+  const filteredData = data.filter(item => 
+    item.name.toLowerCase().includes(text.toLowerCase())
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>🍳Recipe Book!</Text>
+      <Text style={styles.text1}>Welcome to Recipe Book! 🍽️ Embark on a journey through the rich and diverse world of Japanese cuisine. From comforting bowls of ramen and delicate sushi to hearty donburi and traditional wagashi, our collection brings the essence of Japan to your kitchen. Whether you're a seasoned chef or a beginner, discover the art of washoku, explore authentic flavors, and create dishes that have been cherished for generations. Let’s bring the taste of Japan to your table today! </Text>
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Search your liking..."
+        placeholderTextColor="gray"
+        onChangeText={setText}
+        value={text}
+      />
+
+      <FlatList
+        data={filteredData}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.itemRow} onPress={() => handlePress(item)}>
+            <Image source={item.image} style={styles.image} />
+            <Text style={styles.item}>{item.name}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: 'white', 
+    alignItems: 'center',
+  },
+
+  input: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 50,
+    marginBottom: 30,
+    width: 300,
+    borderColor: '#c71585',
+    borderWidth: 2,
+  },
+
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+    width: 1500,
+    borderWidth: 2,
+    borderColor: '#c71585',
+  },
+
+  image: {
+    width: 90,
+    height: 90,
+    marginRight: 10,
+    borderRadius: 10,
+  },
+
+  item: {
+    fontSize: 20,
+    
+    color: 'black',
+  },
+
+  text: {
+    textAlign: 'center',
+    color: '#c71585',
+    marginVertical: 20,
+    fontSize: 70,
+    fontWeight: 'bold',
+  },
+
+  text1: {
+    marginBottom: 25,
+    textAlign: 'center',
+    width: 1000,
+  }
+});
+
+export default App;
