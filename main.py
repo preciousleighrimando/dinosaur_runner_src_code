@@ -710,7 +710,7 @@ def meduim_mode():
                             choice = random.randint(0, 2)
                             choice1 = random.randint(0, 1)
                             choice2 = random.randint(0, 1)
-                            obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus][choice]))
+                            obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
                             obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
                             obstacles.append([SmallCactus, LargeCactus][choice1]([small_cactus, large_cactus][choice1]))
                             obstacles[-1].rect.x += random.randint(750, 900)  # Adjust x-axis for spacing
