@@ -216,34 +216,57 @@ class OnGameBackground:
 
 # Modify the main game loop to use the updated layering system
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles
+    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, levels
     run = True
     clock = pygame.time.Clock()
     player = Dinosaur()
     cloud = Cloud()
-    game_speed = 20
-    max_speed = 30
+    game_speed = 30
+    max_speed = 50
     x_pos_bg = 0
     y_pos_bg = 380
     points = 0
-    levels = 1  # Initialize levels
-    obstacles = []
+    complete = False
+    levels = 0
+    gameBG = OnGameBackground()  # Create an instance of the OnGameBackground class
 
-    font = pygame.font.Font('freesansbold.ttf', 20)
+    font = pygame.font.Font('Font/monogram.ttf', 50)  # Adjusted font size for better visibility
+    obstacles = []
 
     def score():
         global points, game_speed, levels
-        points += 1
-        levels = points // 500  # Update levels dynamically based on points
 
+        points += 1
+
+        # Define levels at specific points
+        if points >= 5300:
+            levels = 5
+        elif points >= 3800:
+            levels = 4
+        elif points >= 2500:
+            levels = 3
+        elif points >= 300:
+            levels = 2
+        elif points < 300:
+            levels = 1
+
+        # Increase speed every 200 points (up to max speed)
         if points % 200 == 0 and game_speed < max_speed:
             game_speed += 1
 
-        # Display level and points
-        text_level = font.render(f"Level: {levels + 1}", True, (0, 0, 0))
+        # Display Level
+        text_level = font.render(f"Level: {levels}", True, (0, 0, 0))
         SCREEN.blit(text_level, (10, 20))
+        # text_difficulty = font.render(f"Difficulty: Medium", True, (0, 0, 0))
+        # SCREEN.blit(text_difficulty, (800, 20))
+        # text_speed = font.render(f"Game Speed: {game_speed}", True, (0, 0, 0))
+        # SCREEN.blit(text_speed, (10, 80))
+
+        # Display Points
+        if points > 7000:
+            points = 7000  # Cap the points at 7000
         text_score = font.render(f"Points: {points}", True, (0, 0, 0))
-        SCREEN.blit(text_score, (10, 40))
+        SCREEN.blit(text_score, (10, 60))
 
     def background():
         global x_pos_bg
@@ -261,53 +284,52 @@ def main():
 
         SCREEN.fill((255, 255, 255))
         userInput = pygame.key.get_pressed()
-        
+
+        gameBG.draw(SCREEN)
+        gameBG.update()
         player.draw(SCREEN)
         player.update(userInput)
 
-        # Add obstacles based on levels
         if not obstacles:
-            if levels == 0:  # Level 1: Only small cacti
-                obstacles.append(BirdIndex(bird_img))
-            elif levels == 1:  # Level 2: Small cacti and birds
-                if random.choice([True, False]):
-                    obstacles.append(SmallCactus(small_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-            elif levels == 2:  # Level 3: Small, large cacti, and birds
+            if levels >= 1:  
+
                 choice = random.randint(0, 2)
-                if choice == 0:
-                    obstacles.append(SmallCactus(small_cactus))
-                elif choice == 1:
-                    obstacles.append(LargeCactus(large_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-            elif levels == 3:  # Level 4: Faster spawning
-                choice = random.randint(0, 2)
-                if choice == 0:
-                    obstacles.append(SmallCactus(small_cactus))
-                elif choice == 1:
-                    obstacles.append(LargeCactus(large_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-            elif levels >= 4:  # Level 5: Spawn objects side by side
-                choice = random.randint(0, 2)
-                if choice == 0:
-                    obstacles.append(SmallCactus(small_cactus))
-                    obstacles.append(SmallCactus(small_cactus))
-                elif choice == 1:
-                    obstacles.append(LargeCactus(large_cactus))
-                    obstacles.append(LargeCactus(large_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-                    obstacles.append(BirdIndex(bird_img))
+                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                obstacles[-1].rect.x += 0 # Adjust x-axis for spacing
+                choice1 = random.randint(0, 2)
+                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                obstacles[-1].rect.x += 650 # Adjust x-axis for spacing
+                if levels >= 2:
+                    # Level 4: Chances of spawning 1 || 2 objects
+                    choice1 = random.randint(0, 3)
+                    if choice1 == 0:  # 1/4 chance to spawn no obstacle
+                        pass
+                    else:
+                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1 - 1]([small_cactus, large_cactus, bird_img][choice1 - 1]))
+                        obstacles[-1].rect.x += 1300# Adjust x-axis for spacing
+
+
+                        # if choice3 >= 1:
+                        #     choice = random.randint(0, 2)
+                        #     choice1 = random.randint(0, 2)
+                        #     choice2 = random.randint(0, 2)
+                        #     if choice == 0:
+                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                        #         obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
+                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                        #         obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
+                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
+                        #         obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
 
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
             obstacle.update()
             if player.dino_rect.colliderect(obstacle.rect):
-                player.dead()  # Trigger the dead state
-                pygame.time.delay(1500)
+                pygame.time.delay(0)
+                run = False  # Stop the game loop immediately
+                break  # Exit the obstacle loop
+            elif points >= 7000:
+                complete = True
                 run = False  # Stop the game loop immediately
                 break  # Exit the obstacle loop
 
@@ -318,8 +340,11 @@ def main():
 
         clock.tick(30)
         pygame.display.update()
+    if complete:
+        level_completed()  # Pass the current background position to game_over()
+    else:
+        game_over("main")  # Pass "medium" mode to game_overmedium")
 
-    game_over("main")
 
 def difficulty_menu():  # Accept x_pos_bg and y_pos_bg as arguments
     button_width = 200
@@ -375,19 +400,11 @@ def difficulty_menu():  # Accept x_pos_bg and y_pos_bg as arguments
                 exit()  # Exit the program cleanly
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if button_easy.collidepoint(mouse_x, mouse_y):
-                    play_button_sound()  # Play sound effect
-                    easy_mode()  # Call easy_mode() when the button is clicked
-                elif button_medium.collidepoint(mouse_x, mouse_y):
-                    play_button_sound()  # Play sound effect
-                    meduim_mode()  # Call medium_mode() when the button is clicked
-                elif button_hard.collidepoint(mouse_x, mouse_y):
-                    play_button_sound()  # Play sound effect
-                    menu()
+                menu()
 
         clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
 
-def easy_mode():
+
     global game_speed, x_pos_bg, y_pos_bg, points, obstacles, levels
     run = True
     clock = pygame.time.Clock()
@@ -473,72 +490,71 @@ def easy_mode():
             elif levels == 2:  # Level 2: Small cacti and birds
                 choice = random.randint(0, 1)
                 obstacles.append([SmallCactus, BirdIndex][choice]([small_cactus, bird_img][choice]))
-
-            elif levels >= 3:  # Level 3: 2 obstacles
-
+            elif levels >= 3:  # Level 3: Small, large cacti, and birds
                 choice = random.randint(0, 2)
                 obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                obstacles[-1].rect.x += 0 # Adjust x-axis for spacing
+                obstacles[-1].rect.x += random.randint(100, 200)  # Adjust x-axis for proper spacing
 
-                chances = random.randint(0, 4)
-                if chances == 0:
-                    pass
-                else:
-                    choice1 = random.randint(0, 2)
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                    obstacles[-1].rect.x += 650 # Adjust x-axis for spacing
-                if levels >= 4 and chances > 0:
-                    # Level 4: Chances of spawning 1 || 2 objects
-                    choice1 = random.randint(0, 4)
+                if levels >= 4:
+            
+                    choice1 = random.randint(0, 3)
                     if choice1 == 0:  # 1/4 chance to spawn no obstacle
                         pass
                     else:
                         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1 - 1]([small_cactus, large_cactus, bird_img][choice1 - 1]))
-                        obstacles[-1].rect.x += 1300# Adjust x-axis for spacing
+                        obstacles[-1].rect.x += random.randint(800, 900)  # Adjust x-axis for proper spacing
+                   
                 
             elif levels >= 5:  # Level 5: Spawn objects side by side
                 choice1 = random.randint(0, 5)
                 if choice1 == 0:
                     pass
                 elif choice1 >= 1 :
-                    if random.choice([True, False, False]):
+                    if random.choice([True, False, False]):  # 1/3 chance to spawn only one obstacle
                         choice1 = random.randint(0, 2)
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        choice2 = random.randint(0, 2)
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        obstacles[-1].rect.x += 800# Adjust x-axis for spacing
-                elif choice1 >= 4:
-                    choice = random.randint(0, 4)
-                    if choice == 0:
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
-                    elif choice == 1:
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
-                    elif choice == 2:
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
-
-                    elif choice == 3:
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
-
-                    else:
-                        obstacles.append(BirdIndex(bird_img))
-                        obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
-                        obstacles.append(BirdIndex(bird_img))
-                        obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
+                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1 - 1]([small_cactus, large_cactus, bird_img][choice1 - 1]))
+                        obstacles[-1].rect.x += random.randint(100, 200)  # Adjust x-axis for proper spacing
+                        choice2 = random.randint(0, 1)
+                        if choice2 >= 0:
+                            if choice1 == 2 and choice2 == 0:  # If both are birds
+                                obstacles.append(BirdIndex(bird_img))
+                                obstacles[-1].rect.x += random.randint(700, 800)  # Make them further apart
+                            elif choice2 == 1:  
+                                obstacles.append(LargeCactus(large_cactus))
+                                obstacles[-1].rect.x += random.randint(700, 800)  # Adjust x-axis for proper spacing
+                            else:     
+                                obstacles.append(BirdIndex(bird_img))
+                                obstacles[-1].rect.x += random.randint(700, 800)
+                    
+                    else:  # Otherwise, spawn objects side by side
+                        choice = random.randint(0, 4)
+                        if choice == 0:
+                            obstacles.append(SmallCactus(small_cactus))
+                            obstacles[-1].rect.x -= random.randint(50, 100)  # Adjust x-axis for spacing
+                            obstacles.append(SmallCactus(small_cactus))
+                            obstacles[-1].rect.x -= random.randint(75, 100)  # Adjust x-axis for spacing
+                        elif choice == 1:
+                            obstacles.append(LargeCactus(large_cactus))
+                            obstacles[-1].rect.x -= random.randint(50, 100)  # Adjust x-axis for spacing
+                            obstacles.append(LargeCactus(large_cactus))
+                            obstacles[-1].rect.x -= random.randint(150, 200)  # Adjust x-axis for spacing
+                        elif choice == 2:
+                            obstacles.append(SmallCactus(small_cactus))
+                            obstacles[-1].rect.x -= random.randint(50, 100)  # Adjust x-axis for spacing
+                            obstacles.append(LargeCactus(large_cactus))
+                            obstacles[-1].rect.x -= random.randint(75, 100)  # Adjust x-axis for spacing
+                        elif choice == 3:
+                            obstacles.append(LargeCactus(large_cactus))
+                            obstacles[-1].rect.x -= random.randint(50, 100)  # Adjust x-axis for spacing
+                            obstacles.append(SmallCactus(small_cactus))
+                            obstacles[-1].rect.x -= random.randint(75, 100)  # Adjust x-axis for spacing
+                        else:
+                            obstacles.append(BirdIndex(bird_img))
+                            obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
+                            obstacles.append(SmallCactus(small_cactus))
+                            obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
+                            obstacles.append(BirdIndex(bird_img))
+                            obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
 
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
@@ -564,212 +580,7 @@ def easy_mode():
     else:
         game_over("easy")
 
-def meduim_mode():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, levels
-    run = True
-    clock = pygame.time.Clock()
-    player = Dinosaur()
-    cloud = Cloud()
-    game_speed = 30
-    max_speed = 50
-    x_pos_bg = 0
-    y_pos_bg = 380
-    points = 0
-    complete = False
-    levels = 0
-    gameBG = OnGameBackground()  # Create an instance of the OnGameBackground class
-
-    font = pygame.font.Font('Font/monogram.ttf', 50)  # Adjusted font size for better visibility
-    obstacles = []
-
-    def score():
-        global points, game_speed, levels
-
-        points += 1
-
-        # Define levels at specific points
-        if points >= 5300:
-            levels = 5
-        elif points >= 3800:
-            levels = 4
-        elif points >= 2500:
-            levels = 3
-        elif points >= 1250:
-            levels = 2
-        elif points < 500:
-            levels = 1
-
-        # Increase speed every 200 points (up to max speed)
-        if points % 200 == 0 and game_speed < max_speed:
-            game_speed += 1
-
-        # Display Level
-        text_level = font.render(f"Level: {levels}", True, (0, 0, 0))
-        SCREEN.blit(text_level, (10, 20))
-        # text_difficulty = font.render(f"Difficulty: Medium", True, (0, 0, 0))
-        # SCREEN.blit(text_difficulty, (800, 20))
-        # text_speed = font.render(f"Game Speed: {game_speed}", True, (0, 0, 0))
-        # SCREEN.blit(text_speed, (10, 80))
-
-        # Display Points
-        if points > 7000:
-            points = 7000  # Cap the points at 7000
-        text_score = font.render(f"Points: {points}", True, (0, 0, 0))
-        SCREEN.blit(text_score, (10, 60))
-
-    def background():
-        global x_pos_bg
-        image_width = ground.get_width()
-        SCREEN.blit(ground, (x_pos_bg, SCREEN_HEIGHT - 200))  # Move background higher
-        SCREEN.blit(ground, (image_width + x_pos_bg, SCREEN_HEIGHT - 200))
-        if x_pos_bg <= -image_width:
-            x_pos_bg = 0
-        x_pos_bg -= game_speed
-
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        SCREEN.fill((255, 255, 255))
-        userInput = pygame.key.get_pressed()
-
-        gameBG.draw(SCREEN)
-        gameBG.update()
-        player.draw(SCREEN)
-        player.update(userInput)
-
-        # Add obstacles based on levels
-        if not obstacles:
-            if levels == 1:  
-                # Level 1:
-                # 1/8 chances of no obstacles
-                
-                chances = random.randint(0, 8)
-
-                if chances == 0:
-                    pass
-                elif chances >= 1:
-                    choice = random.randint(0, 2)  
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                    obstacles[-1].rect.x += 50 # Adjust x-axis for spacing
-                    choice1 = random.randint(0, 2)  
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                    obstacles[-1].rect.x += 600 # Adjust x-axis for spacing
-                    choice2 = random.randint(0, 2)  
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                    obstacles[-1].rect.x += 1200 # Adjust x-axis for spacing
-                if choice1 == 0: 
-                    pass
-                else:
-                    choice = random.randint(0, 2)  
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                    obstacles[-1].rect.x += 1800 # Adjust x-axis for spacing
-
-
-            elif levels >= 2:  # Level 2: Spawn objects side by side
-
-                    chances = random.randint(0, 6)
-
-                    if chances == 0:
-                        pass
-                    elif chances >= 1:
-                        choice = random.randint(0, 2)  
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                        obstacles[-1].rect.x += 50 # Adjust x-axis for spacing
-                        choice1 = random.randint(0, 2)  
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                        obstacles[-1].rect.x += 600 # Adjust x-axis for spacing
-                        choice2 = random.randint(0, 2)  
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        obstacles[-1].rect.x += 1200 # Adjust x-axis for spacing
-                    if choice1 == 0: 
-                        pass
-                    else:
-                        choice = random.randint(0, 2)  
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                        obstacles[-1].rect.x += 1800 # Adjust x-axis for spacing
-
-
-            elif levels >= 3:  # Level 3: Spawn objects side by side
-                # Pass 1/6 || 3 obsacles 3/6 || 4 obstacles 2/6
-                choice1 = random.randint(0, 7)
-                if choice1 == 0:
-                    pass
-                elif choice1 >= 1:
-                    choice = random.randint(0, 1)
-                    # choice3 = random.randint(0, 2)
-                    if choice == 0:
-                        choice = random.randint(0, 1)
-                        choice1 = random.randint(0, 1)
-                        choice2 = random.randint(0, 2)
-                        obstacles.append([SmallCactus, LargeCactus][choice]([small_cactus, large_cactus][choice]))
-                        obstacles[-1].rect.x += 50 # Adjust x-axis for spacing
-                        obstacles.append([SmallCactus, LargeCactus][choice1]([small_cactus, large_cactus][choice1]))
-                        obstacles[-1].rect.x += 75 # Adjust x-axis for spacing
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        obstacles[-1].rect.x += random.randint(800, 900)  # Adjust x-axis for spacing
-                    else:
-                        choice = random.randint(0, 2)
-                        choice1 = random.randint(0, 1)
-                        choice2 = random.randint(0, 1)
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                        obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
-                        obstacles.append([SmallCactus, LargeCactus][choice1]([small_cactus, large_cactus][choice1]))
-                        obstacles[-1].rect.x += random.randint(750, 900)  # Adjust x-axis for spacing
-                        obstacles.append([SmallCactus, LargeCactus][choice2]([small_cactus, large_cactus][choice2]))
-                        obstacles[-1].rect.x += random.randint(800, 900)  # Adjust x-axis for spacing
-                elif choice1 >= 5:
-                    choice = random.randint(0, 2)
-                    choice1 = random.randint(0, 1)
-                    choice2 = random.randint(0, 1)
-                    choice3 = random.randint(0, 2)
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus][choice]))
-                    obstacles[-1].rect.x += random.randint(50, 70)  # Adjust x-axis for spacing
-                    obstacles.append([SmallCactus, LargeCactus][choice1]([small_cactus, large_cactus][choice1]))
-                    obstacles[-1].rect.x += random.randint(75, 100)  # Adjust x-axis for spacing
-                    obstacles.append([SmallCactus, LargeCactus][choice2]([small_cactus, large_cactus][choice2]))
-                    obstacles[-1].rect.x += random.randint(800, 900)  # Adjust x-axis for spacing
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice3]([small_cactus, large_cactus, bird_img][choice3]))
-                    obstacles[-1].rect.x += random.randint(825, 900)  # Adjust x-axis for spacing
-
-
-                        # if choice3 >= 1:
-                        #     choice = random.randint(0, 2)
-                        #     choice1 = random.randint(0, 2)
-                        #     choice2 = random.randint(0, 2)
-                        #     if choice == 0:
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                        #         obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                        #         obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        #         obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
-
-        for obstacle in obstacles:
-            obstacle.draw(SCREEN)
-            obstacle.update()
-            if player.dino_rect.colliderect(obstacle.rect):
-                pygame.time.delay(0)
-                run = False  # Stop the game loop immediately
-                break  # Exit the obstacle loop
-            elif points >= 7000:
-                complete = True
-                run = False  # Stop the game loop immediately
-                break  # Exit the obstacle loop
-
-        background()
-        cloud.draw(SCREEN)
-        cloud.update()
-        score()
-
-        clock.tick(30)
-        pygame.display.update()
-    if complete:
-        level_completed()  # Pass the current background position to game_over()
-    else:
-        game_over("medium")  # Pass "medium" mode to game_overmedium")
-
+  
 def game_over(difficulty):  # Remove x_pos_bg and y_pos_bg arguments
     button_width = 200
     button_height = 50
@@ -825,12 +636,7 @@ def game_over(difficulty):  # Remove x_pos_bg and y_pos_bg arguments
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if button_restart.collidepoint(mouse_x, mouse_y):
                     play_button_sound()  # Play sound effect
-                    if difficulty == "easy":
-                        easy_mode()
-                    elif difficulty == "medium":
-                        meduim_mode()
-                    else:
-                        main()
+                    main()
                 elif button_home.collidepoint(mouse_x, mouse_y):
                     play_button_sound()  # Play sound effect
                     menu()  # Go back to the main menu
@@ -967,7 +773,7 @@ def menu():
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
                     play_button_sound()  # Play sound effect
-                    difficulty_menu()  # Call the difficulty menu when the button is clicked
+                    main()  # Call the difficulty menu when the button is clicked
 
         clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
 
