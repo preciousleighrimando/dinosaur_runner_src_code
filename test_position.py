@@ -296,67 +296,17 @@ def main():
                 choice = random.randint(0, 2)
                 obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
                 obstacles[-1].rect.x += 0 # Adjust x-axis for spacing
+                choice = random.randint(0, 2)
+                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                obstacles[-1].rect.x += 800 # Adjust x-axis for spacing
+                choice = random.randint(0, 2)
+                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                obstacles[-1].rect.x += 1800 # Adjust x-axis for spacing
+                choice = random.randint(0, 2)
+                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                obstacles[-1].rect.x += 2800 # Adjust x-axis for spacing
 
-                chances = random.randint(0, 4)
-                if chances == 0:
-                    pass
-                else:
-                    choice1 = random.randint(0, 2)
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                    obstacles[-1].rect.x += 800 # Adjust x-axis for spacing
-
-                    if levels >= 2 and chances > 0: 
-                        # Level 4: Chances of spawning 3 obstacles or 2 obstacles with 1pair of obstacle
-                        chances1 = random.randint(0, 4)
-                        if chances1 >=1:  # 1/4 chance to spawn no obstacle
-                            choice1 = random.randint(0, 2)
-                            obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                            obstacles[-1].rect.x += 1600# Adjust x-axis for spacing
-                        elif chances1 >= 3:
-                            choice1 = random.randint(0, 2)
-                            obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                            obstacles[-1].rect.x += 875# Adjust x-axis for spacing
-                        else:
-                            pass
-
-                        if levels >= 3 and chances > 0:
-                            # Level 5: Chances of spawning 4 obstacles or 3 obstacles with 1pair of obstacles
-                            choice1 = random.randint(0, 5)
-                            if choice1 == 0:
-                                pass
-                            elif choice1 >= 1 :
-                                choice1 = random.randint(0, 2)
-                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                                obstacles[-1].rect.x += 2400# Adjust x-axis for spacing
-                            elif choice1 >= 4:
-                                choice = random.randint(0, 4)
-                                if choice >= 3:
-
-                                    # 1pair of obstacle + single obstacle
-
-                                    obs_chances = random.randint(0, 2)
-                                    obstacles.append([SmallCactus, LargeCactus][obs_chances]([small_cactus, large_cactus][obs_chances]))
-                                    obstacles[-1].rect.x += 1800
-                                    obstacles.append([SmallCactus, LargeCactus][obs_chances]([small_cactus, large_cactus][obs_chances]))
-                                    obstacles[-1].rect.x += 1875
-
-                                    choice1 = random.randint(0, 2)
-                                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                                    obstacles[-1].rect.x += 2600
-
-
-                        # if choice3 >= 1:
-                        #     choice = random.randint(0, 2)
-                        #     choice1 = random.randint(0, 2)
-                        #     choice2 = random.randint(0, 2)
-                        #     if choice == 0:
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                        #         obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                        #         obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        #         obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
-
+              
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
             obstacle.update()

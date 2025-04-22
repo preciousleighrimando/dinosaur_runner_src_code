@@ -338,6 +338,8 @@ def difficulty_menu():  # Accept x_pos_bg and y_pos_bg as arguments
     clock = pygame.time.Clock()  # To control the frame rate
 
     while True:
+        if frame_counter == 0:
+            frame_index = (frame_index + 1) % len(home_bg_frames)
         frame_counter = (frame_counter + 1) % frame_delay
         SCREEN.blit(home_bg_frames[frame_index], (0, 0))
 
@@ -487,58 +489,49 @@ def easy_mode():
                     choice1 = random.randint(0, 2)
                     obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
                     obstacles[-1].rect.x += 650 # Adjust x-axis for spacing
-                if levels >= 4 and chances > 0:
-                    # Level 4: Chances of spawning 1 || 2 objects
-                    choice1 = random.randint(0, 4)
-                    if choice1 == 0:  # 1/4 chance to spawn no obstacle
-                        pass
-                    else:
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1 - 1]([small_cactus, large_cactus, bird_img][choice1 - 1]))
-                        obstacles[-1].rect.x += 1300# Adjust x-axis for spacing
-                
-            elif levels >= 5:  # Level 5: Spawn objects side by side
-                choice1 = random.randint(0, 5)
-                if choice1 == 0:
-                    pass
-                elif choice1 >= 1 :
-                    if random.choice([True, False, False]):
-                        choice1 = random.randint(0, 2)
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        choice2 = random.randint(0, 2)
-                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        obstacles[-1].rect.x += 800# Adjust x-axis for spacing
-                elif choice1 >= 4:
-                    choice = random.randint(0, 4)
-                    if choice == 0:
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
-                    elif choice == 1:
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
-                    elif choice == 2:
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
+                    if levels >= 4 and chances > 0: 
+                        # Level 4: Chances of spawning 3 obstacles
+                        choice1 = random.randint(0, 4)
+                        if choice1 == 0:  # 1/4 chance to spawn no obstacle
+                            pass
+                        else:
+                            choice1 = random.randint(0, 2)
+                            obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                            obstacles[-1].rect.x += 1300# Adjust x-axis for spacing
 
-                    elif choice == 3:
-                        obstacles.append(LargeCactus(large_cactus))
-                        obstacles[-1].rect.x += 0# Adjust x-axis for spacing
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += 700# Adjust x-axis for spacing
+                    elif levels >= 5 and chances > 0:
+                        # Level 5: Chances of spawning 4 obstacles or 3 obstacles with 1pair of obstacles
+                        
+                        choice1 = random.randint(0, 5)
+                        if choice1 == 0:
+                            pass
+                        elif choice1 >= 1 :
+                            if random.choice([True, False, False]):
+                                # 2 obstacles
 
-                    else:
-                        obstacles.append(BirdIndex(bird_img))
-                        obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
-                        obstacles.append(SmallCactus(small_cactus))
-                        obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
-                        obstacles.append(BirdIndex(bird_img))
-                        obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
+                                choice1 = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                                obstacles[-1].rect.x += 1800# Adjust x-axis for spacing
+                                choice2 = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
+                                obstacles[-1].rect.x += 2600# Adjust x-axis for spacing
+                        elif choice1 >= 4:
+                            choice = random.randint(0, 4)
+                            if choice >= 3:
+
+                                # 1pair of obstacle + single obstacle
+
+                                obs_chances = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus][obs_chances]([small_cactus, large_cactus][obs_chances]))
+                                obstacles[-1].rect.x += 1800
+                                obstacles.append([SmallCactus, LargeCactus][obs_chances]([small_cactus, large_cactus][obs_chances]))
+                                obstacles[-1].rect.x += 1875
+
+                                choice1 = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                                obstacles[-1].rect.x += 2600
+                            
+                              
 
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
@@ -645,7 +638,7 @@ def meduim_mode():
                 # Level 1:
                 # 1/8 chances of no obstacles
                 
-                chances = random.randint(0, 8)
+                chances = random.randint(0, 4)
 
                 if chances == 0:
                     pass
@@ -659,12 +652,14 @@ def meduim_mode():
                     choice2 = random.randint(0, 2)  
                     obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
                     obstacles[-1].rect.x += 1200 # Adjust x-axis for spacing
-                if choice1 == 0: 
-                    pass
-                else:
-                    choice = random.randint(0, 2)  
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                    obstacles[-1].rect.x += 1800 # Adjust x-axis for spacing
+
+                    chances1 = random.randint(0, 5)
+                    if chances1 >= 1: 
+                        pass
+                    else:
+                        choice = random.randint(0, 2)  
+                        obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                        obstacles[-1].rect.x += 1800 # Adjust x-axis for spacing
 
 
             elif levels >= 2:  # Level 2: Spawn objects side by side
