@@ -856,12 +856,12 @@ def settings_menu():
         SCREEN.blit(text, text_rect)
 
         # Draw "Resume" button
-        button_resume = pygame.Rect(start_x, button_y, button_width, button_height)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_resume, border_radius=10)  # Black background
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_resume, border_radius=10, width=2)  # Border
-        button_text_resume = button_font.render("Resume", True, (0, 0, 0))  # White text
-        SCREEN.blit(button_text_resume, (start_x + (button_width - button_text_resume.get_width()) // 2,
-                                         button_y + (button_height - button_text_resume.get_height()) // 2))
+        button_home = pygame.Rect(start_x, button_y, button_width, button_height)
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_home, border_radius=10)  # Black background
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_home, border_radius=10, width=2)  # Border
+        button_text_home = button_font.render("Home", True, (0, 0, 0))  # White text
+        SCREEN.blit(button_text_home, (start_x + (button_width - button_text_home.get_width()) // 2,
+                                         button_y + (button_height - button_text_home.get_height()) // 2))
 
         # Render the UUID in the bottom left corner
         text_uuid = button_font.render("UUID: " + str(unique_id), True, (255, 255, 255))  # Convert UUID to string before rendering
@@ -875,7 +875,7 @@ def settings_menu():
                 exit()  # Exit the program cleanly
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if button_resume.collidepoint(mouse_x, mouse_y):
+                if button_home.collidepoint(mouse_x, mouse_y):
                     return  # Resume the game
               
             if event.type == pygame.KEYDOWN:
