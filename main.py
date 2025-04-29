@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+import uuid 
 
 # Initialize pygame mixer with lower latency
 pygame.mixer.pre_init(44100, -16, 2, 512)  # Frequency, size, channels, buffer size
@@ -831,13 +832,14 @@ def level_completed():  # Remove x_pos_bg and y_pos_bg arguments
 
         clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
 
-def settings_menu(current_mode):
+def settings_menu():
     button_width = 200
     button_height = 50
     spacing = 20  # Space between buttons
     total_width = 2 * button_width + spacing  # Total width of all buttons and spacing
     start_x = (SCREEN_WIDTH - total_width) // 2  # Starting x-coordinate for the first button
     button_y = (SCREEN_HEIGHT - button_height) // 2  # Center the buttons vertically
+    unique_id = uuid.uuid4()
 
     # Load the custom font
     title_font = pygame.font.Font('Font/monogram.ttf', 80)  # Larger font size for "Settings"
@@ -846,28 +848,24 @@ def settings_menu(current_mode):
     clock = pygame.time.Clock()  # Define clock to control the frame rate
 
     while True:
-        SCREEN.fill((0, 0, 0))  # Black background for the settings menu
+        SCREEN.fill((0, 0, 0))  # White background for the settings menu
 
         # Render the "Settings" title
-        text = title_font.render("Settings", True, (255, 255, 255))  # Render the text in white
+        text = title_font.render("Settings", True, (255, 255, 255))  # Render the text in black
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
         SCREEN.blit(text, text_rect)
 
         # Draw "Resume" button
         button_resume = pygame.Rect(start_x, button_y, button_width, button_height)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_resume, border_radius=10)  # White background
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_resume, border_radius=10)  # Black background
         pygame.draw.rect(SCREEN, (255, 255, 255), button_resume, border_radius=10, width=2)  # Border
-        button_text_resume = button_font.render("Resume", True, (0, 0, 0))  # Black text
+        button_text_resume = button_font.render("Resume", True, (0, 0, 0))  # White text
         SCREEN.blit(button_text_resume, (start_x + (button_width - button_text_resume.get_width()) // 2,
                                          button_y + (button_height - button_text_resume.get_height()) // 2))
 
-        # Draw "Restart" button
-        button_restart = pygame.Rect(start_x + button_width + spacing, button_y, button_width, button_height)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_restart, border_radius=10)  # White background
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_restart, border_radius=10, width=2)  # Border
-        button_text_restart = button_font.render("Restart", True, (0, 0, 0))  # Black text
-        SCREEN.blit(button_text_restart, (start_x + button_width + spacing + (button_width - button_text_restart.get_width()) // 2,
-                                          button_y + (button_height - button_text_restart.get_height()) // 2))
+        # Render the UUID in the bottom left corner
+        text_uuid = button_font.render("UUID: " + str(unique_id), True, (255, 255, 255))  # Convert UUID to string before rendering
+        SCREEN.blit(text_uuid, (20, SCREEN_HEIGHT - text_uuid.get_height() - 20))  # 20px padding from bottom-left corner
 
         pygame.display.update()
 
@@ -879,14 +877,7 @@ def settings_menu(current_mode):
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if button_resume.collidepoint(mouse_x, mouse_y):
                     return  # Resume the game
-                elif button_restart.collidepoint(mouse_x, mouse_y):
-                    play_button_sound()  # Play sound effect
-                    if current_mode == "easy":
-                        easy_mode()
-                    elif current_mode == "medium":
-                        meduim_mode()
-                    else:
-                        main()
+              
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return  # Resume the game when Esc is pressed
@@ -964,14 +955,17 @@ def game_manual():
         clock.tick(30)
 
 def menu():
-    button_width = 100  # Width of the "Start" button
-    button_height = 30  # Height of the "Start" button
-    button_x = (SCREEN_WIDTH - button_width) // 2
-    button_y = (SCREEN_HEIGHT - button_height) // 2  # Center the button vertically
+    button_width = 200
+    button_height = 50
+    spacing = 20  # Space between buttons
+    button_x = (SCREEN_WIDTH - button_width) // 2  # Center the buttons horizontally
+    start_y = (SCREEN_HEIGHT - (3 * button_height + 2 * spacing)) // 2  # Center the column vertically
+
 
     # Load the custom font
     font = pygame.font.Font('Font/monogram.ttf', 100)  # Font size for "Dinosaur Runner"
-    font.set_bold(True)  # Enable bold text
+    button_font = pygame.font.Font('Font/monogram.ttf', 40)  # Smaller font size for buttons
+   
 
     frame_index = 0  # To track the current frame of the background animation
     frame_delay = 5  # Number of frames to wait before updating the background frame
@@ -993,28 +987,22 @@ def menu():
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.4))  # Adjust position for larger text
         SCREEN.blit(text, text_rect)
 
-        # Reset bold if needed for other text
-        font.set_bold(False)
-
-        # Draw the larger white border for the "Start" button
-        border_width = button_width + 70  # Increase the border width
-        border_height = button_height + 10  # Increase the border height
-        border_x = button_x - 38  # Adjust the x position to center the larger border
-        border_y = button_y - 2  # Adjust the y position to center the larger border
-        button_border = pygame.Rect(border_x, border_y, border_width, border_height)
-
-        # Fill the button background with a color (e.g., white)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_border, border_radius=10)
-
-        # Draw the border for the button
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_border, width=2, border_radius=10)
 
         # Render the "Start" button text
-        button_font = pygame.font.Font('Font/monogram.ttf', 40)  # Smaller font size for the "Start" button
-        button_text = button_font.render("Start", True, (0, 0, 0))  # Render the button text in white
-        SCREEN.blit(button_text, (button_x + (button_width - button_text.get_width()) // 2,
-                                  button_y + (button_height - button_text.get_height()) // 2))
+        button_start = pygame.Rect(button_x, start_y + button_height + spacing, button_width, button_height)
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_start, border_radius=10)  # White background
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_start, border_radius=10, width=2)  # Border
+        button_text_start = button_font.render("Start", True, (0, 0, 0))  # Black text
+        SCREEN.blit(button_text_start, (button_x + (button_width - button_text_start.get_width()) // 2,
+                                         start_y + button_height + spacing + (button_height - button_text_start.get_height()) // 2))
 
+        
+        button_settings = pygame.Rect(button_x, start_y + 2 * (button_height + spacing), button_width, button_height)
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_settings, border_radius=10)  # White background
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_settings, border_radius=10, width=2)  # Border
+        button_text_settings = button_font.render("Settings", True, (0, 0, 0))  # Black text
+        SCREEN.blit(button_text_settings, (button_x + (button_width - button_text_settings.get_width()) // 2,
+                                       start_y + 2 * (button_height + spacing) + (button_height - button_text_settings.get_height()) // 2))
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -1023,10 +1011,13 @@ def menu():
                 exit()  # Exit the program cleanly
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+                if button_start.collidepoint(mouse_x, mouse_y):
                     play_button_sound()  # Play sound effect
                     game_manual()  # Show the game manual
                     difficulty_menu()  # Call the difficulty menu after the manual
+                elif button_settings.collidepoint(mouse_x, mouse_y):
+                    play_button_sound()                    
+                    settings_menu()  # Open the settings menu when the icon is clicked
 
         clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
 
