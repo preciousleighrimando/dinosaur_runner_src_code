@@ -864,7 +864,7 @@ def settings_menu():
                                          button_y + (button_height - button_text_home.get_height()) // 2))
 
         # Render the UUID in the bottom left corner
-        text_uuid = button_font.render("UUID: " + str(unique_id), True, (255, 255, 255))  # Convert UUID to string before rendering
+        text_uuid = button_font.render("UID: " + str(unique_id), True, (255, 255, 255))  # Convert UUID to string before rendering
         SCREEN.blit(text_uuid, (20, SCREEN_HEIGHT - text_uuid.get_height() - 20))  # 20px padding from bottom-left corner
 
         pygame.display.update()
