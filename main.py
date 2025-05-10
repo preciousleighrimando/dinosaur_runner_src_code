@@ -1,7 +1,6 @@
 import pygame
 import os
 import random
-import uuid 
 
 # Initialize pygame mixer with lower latency
 pygame.mixer.pre_init(44100, -16, 2, 512)  # Frequency, size, channels, buffer size
@@ -53,16 +52,6 @@ button_click_sound = pygame.mixer.Sound('Sound/S1.mp3')  # Ensure S1.mp3 is in t
 # Function to play the sound effect
 def play_button_sound():
     button_click_sound.play()
-
-# Ensure all global variables are defined before use
-global game_speed, x_pos_bg, y_pos_bg, points, obstacles, levels, max_speed
-game_speed = 20
-x_pos_bg = 0
-y_pos_bg = 380
-points = 0
-obstacles = []
-levels = 1
-max_speed = 30  # Initialize max_speed
 
 class Dinosaur:
     X_POS = 80
@@ -225,122 +214,8 @@ class OnGameBackground:
     
 
 
-# Display smaller text for points and levels
-def score():
-    global points, game_speed, levels
-
-    points += 1
-
-    # Define levels at specific points
-    if points >= 3000:
-        levels = 5
-    elif points >= 1800:
-        levels = 4
-    elif points >= 800:
-        levels = 3
-    elif points >= 300:
-        levels = 2
-    elif points < 300:
-        levels = 1
-
-    # Increase speed every 200 points (up to max speed)
-    if points % 200 == 0 and game_speed < max_speed:
-        game_speed += 1
-
-    # Use the smaller font for better visibility
-    text_points = small_font.render(f"Points: {points}", True, (0, 0, 0))
-    SCREEN.blit(text_points, (SCREEN_WIDTH // 2 - text_points.get_width() // 2, 20))
-
-    text_level = small_font.render(f"Level: {levels}", True, (0, 0, 0))
-    SCREEN.blit(text_level, (20, 20))  # 20px padding from the left
-
-
-# Define a smaller font size
-small_font = pygame.font.Font('Font/monogram.ttf', 50)  # Smaller font size
-
 # Modify the main game loop to use the updated layering system
-def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles
-    run = True
-    clock = pygame.time.Clock()
-    player = Dinosaur()
-    cloud = Cloud()
-    game_speed = 20
-    max_speed = 30
-    x_pos_bg = 0
-    y_pos_bg = 380
-    points = 0
-    levels = 1  # Initialize levels
-    obstacles = []
 
-    font = pygame.font.Font('freesansbold.ttf', 20)
-
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        SCREEN.fill((255, 255, 255))
-        userInput = pygame.key.get_pressed()
-        
-        player.draw(SCREEN)
-        player.update(userInput)
-
-        # Add obstacles based on levels
-        if not obstacles:
-            if levels == 0:  # Level 1: Only small cacti
-                obstacles.append(BirdIndex(bird_img))
-            elif levels == 1:  # Level 2: Small cacti and birds
-                if random.choice([True, False]):
-                    obstacles.append(SmallCactus(small_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-            elif levels == 2:  # Level 3: Small, large cacti, and birds
-                choice = random.randint(0, 2)
-                if choice == 0:
-                    obstacles.append(SmallCactus(small_cactus))
-                elif choice == 1:
-                    obstacles.append(LargeCactus(large_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-            elif levels == 3:  # Level 4: Faster spawning
-                choice = random.randint(0, 2)
-                if choice == 0:
-                    obstacles.append(SmallCactus(small_cactus))
-                elif choice == 1:
-                    obstacles.append(LargeCactus(large_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-            elif levels >= 4:  # Level 5: Spawn objects side by side
-                choice = random.randint(0, 2)
-                if choice == 0:
-                    obstacles.append(SmallCactus(small_cactus))
-                    obstacles.append(SmallCactus(small_cactus))
-                elif choice == 1:
-                    obstacles.append(LargeCactus(large_cactus))
-                    obstacles.append(LargeCactus(large_cactus))
-                else:
-                    obstacles.append(BirdIndex(bird_img))
-                    obstacles.append(BirdIndex(bird_img))
-
-        for obstacle in obstacles:
-            obstacle.draw(SCREEN)
-            obstacle.update()
-            if player.dino_rect.colliderect(obstacle.rect):
-                player.dead()  # Trigger the dead state
-                pygame.time.delay(1500)
-                run = False  # Stop the game loop immediately
-                break  # Exit the obstacle loop
-
-        background()
-        cloud.draw(SCREEN)
-        cloud.update()
-        score()
-
-        clock.tick(30)
-        pygame.display.update()
-
-    game_over("main")
 
 def difficulty_menu():  # Accept x_pos_bg and y_pos_bg as arguments
     button_width = 200
@@ -425,26 +300,43 @@ def easy_mode():
     levels = 0
     gameBG = OnGameBackground()  # Create an instance of the OnGameBackground class
 
+    
+
     font = pygame.font.Font('Font/monogram.ttf', 50)  # Adjusted font size for better visibility
     obstacles = []
 
-    # Settings icon dimensions
-    settings_icon_width = 40
-    settings_icon_height = 40
-    settings_icon_x = SCREEN_WIDTH - settings_icon_width - 20  # 20px padding from the right
-    settings_icon_y = 20  # 20px padding from the top
+    def score():
+        global points, game_speed, levels
 
-    def draw_settings_icon():
-        # Draw the two-bar settings icon
-        bar_width = 30
-        bar_height = 5
-        bar_spacing = 8
-        bar_color = (0, 0, 0)  # Black color
+        points += 1
 
-        # First bar
-        pygame.draw.rect(SCREEN, bar_color, (settings_icon_x, settings_icon_y, bar_width, bar_height))
-        # Second bar
-        pygame.draw.rect(SCREEN, bar_color, (settings_icon_x, settings_icon_y + bar_spacing, bar_width, bar_height))
+        # Define levels at specific points
+        if points >= 3000:
+            levels = 5
+        elif points >= 1800:
+            levels = 4
+        elif points >= 800:
+            levels = 3
+        elif points >= 300:
+            levels = 2
+        elif points < 300:
+            levels = 1
+
+        # Increase speed every 200 points (up to max speed)
+        if points % 200 == 0 and game_speed < max_speed:
+            game_speed += 1
+
+        # Display Level
+        text_level = font.render(f"Level: {levels}", True, (0, 0, 0))
+        SCREEN.blit(text_level, (10, 20))
+       #text_speed = font.render(f"Game Speed: {game_speed}", True, (0, 0, 0))
+        # SCREEN.blit(text_speed, (10, 80))
+
+        # Display Points
+        if points > 4250:
+            points = 4250  # Cap the points at 4250
+        text_score = font.render(f"Points: {points}", True, (0, 0, 0))
+        SCREEN.blit(text_score, (10, 60))
 
     def background():
         global x_pos_bg
@@ -455,18 +347,13 @@ def easy_mode():
             x_pos_bg = 0
         x_pos_bg -= game_speed
 
+
+    
+
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    settings_menu("easy")  # Open the settings menu
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                if settings_icon_x <= mouse_x <= settings_icon_x + settings_icon_width and \
-                   settings_icon_y <= mouse_y <= settings_icon_y + settings_icon_height:
-                    settings_menu("easy")  # Open the settings menu when the icon is clicked
 
         SCREEN.fill((255, 255, 255))
         userInput = pygame.key.get_pressed()
@@ -476,17 +363,71 @@ def easy_mode():
         player.draw(SCREEN)
         player.update(userInput)
 
-        # Add obstacles based on levels
+          # Add obstacles based on levels
         if not obstacles:
             if levels == 1:  # Level 1: Only small cacti
                 obstacles.append(SmallCactus(small_cactus))
+                
             elif levels == 2:  # Level 2: Small cacti and birds
                 choice = random.randint(0, 1)
                 obstacles.append([SmallCactus, BirdIndex][choice]([small_cactus, bird_img][choice]))
+
             elif levels >= 3:  # Level 3: 2 obstacles
+
                 choice = random.randint(0, 2)
                 obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                obstacles[-1].rect.x += 0  # Adjust x-axis for spacing
+                obstacles[-1].rect.x += 0 # Adjust x-axis for spacing
+
+                chances = random.randint(0, 4)
+                if chances == 0:
+                    pass
+                else:
+                    choice1 = random.randint(0, 2)
+                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                    obstacles[-1].rect.x += 650 # Adjust x-axis for spacing
+                    if levels >= 4 and chances > 0: 
+                        # Level 4: Chances of spawning 3 obstacles
+                        choice1 = random.randint(0, 4)
+                        if choice1 == 0:  # 1/4 chance to spawn no obstacle
+                            pass
+                        else:
+                            choice1 = random.randint(0, 2)
+                            obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                            obstacles[-1].rect.x += 1300# Adjust x-axis for spacing
+
+                    elif levels >= 5 and chances > 0:
+                        # Level 5: Chances of spawning 4 obstacles or 3 obstacles with 1pair of obstacles
+                        
+                        choice1 = random.randint(0, 5)
+                        if choice1 == 0:
+                            pass
+                        elif choice1 >= 1 :
+                            if random.choice([True, False, False]):
+                                # 2 obstacles
+
+                                choice1 = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                                obstacles[-1].rect.x += 1800# Adjust x-axis for spacing
+                                choice2 = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
+                                obstacles[-1].rect.x += 2600# Adjust x-axis for spacing
+                        elif choice1 >= 4:
+                            choice = random.randint(0, 4)
+                            if choice >= 3:
+
+                                # 1pair of obstacle + single obstacle
+
+                                obs_chances = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus][obs_chances]([small_cactus, large_cactus][obs_chances]))
+                                obstacles[-1].rect.x += 1800
+                                obstacles.append([SmallCactus, LargeCactus][obs_chances]([small_cactus, large_cactus][obs_chances]))
+                                obstacles[-1].rect.x += 1875
+
+                                choice1 = random.randint(0, 2)
+                                obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
+                                obstacles[-1].rect.x += 2600
+                            
+                              
 
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
@@ -504,7 +445,6 @@ def easy_mode():
         cloud.draw(SCREEN)
         cloud.update()
         score()
-        draw_settings_icon()  # Draw the settings icon
 
         clock.tick(30)
         pygame.display.update()
@@ -530,6 +470,50 @@ def meduim_mode():
 
     font = pygame.font.Font('Font/monogram.ttf', 50)  # Adjusted font size for better visibility
     obstacles = []
+
+    def score():
+        global points, game_speed, levels
+
+        points += 1
+
+        # Define levels at specific points
+        if points >= 5300:
+            levels = 5
+        elif points >= 3800:
+            levels = 4
+        elif points >= 2500:
+            levels = 3
+        elif points >= 1250:
+            levels = 2
+        elif points < 500:
+            levels = 1
+
+        # Increase speed every 200 points (up to max speed)
+        if points % 200 == 0 and game_speed < max_speed:
+            game_speed += 1
+
+        # Display Level
+        text_level = font.render(f"Level: {levels}", True, (0, 0, 0))
+        SCREEN.blit(text_level, (10, 20))
+        # text_difficulty = font.render(f"Difficulty: Medium", True, (0, 0, 0))
+        # SCREEN.blit(text_difficulty, (800, 20))
+        # text_speed = font.render(f"Game Speed: {game_speed}", True, (0, 0, 0))
+        # SCREEN.blit(text_speed, (10, 80))
+
+        # Display Points
+        if points > 7000:
+            points = 7000  # Cap the points at 7000
+        text_score = font.render(f"Points: {points}", True, (0, 0, 0))
+        SCREEN.blit(text_score, (10, 60))
+
+    def background():
+        global x_pos_bg
+        image_width = ground.get_width()
+        SCREEN.blit(ground, (x_pos_bg, SCREEN_HEIGHT - 200))  # Move background higher
+        SCREEN.blit(ground, (image_width + x_pos_bg, SCREEN_HEIGHT - 200))
+        if x_pos_bg <= -image_width:
+            x_pos_bg = 0
+        x_pos_bg -= game_speed
 
     while run:
         for event in pygame.event.get():
@@ -631,7 +615,7 @@ def meduim_mode():
                     choice1 = random.randint(0, 1)
                     choice2 = random.randint(0, 1)
                     choice3 = random.randint(0, 2)
-                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
+                    obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus][choice]))
                     obstacles[-1].rect.x += random.randint(50, 70)  # Adjust x-axis for spacing
                     obstacles.append([SmallCactus, LargeCactus][choice1]([small_cactus, large_cactus][choice1]))
                     obstacles[-1].rect.x += random.randint(75, 100)  # Adjust x-axis for spacing
@@ -677,7 +661,7 @@ def meduim_mode():
     else:
         game_over("medium")  # Pass "medium" mode to game_overmedium")
 
-def game_over(difficulty):
+def game_over(difficulty):  # Remove x_pos_bg and y_pos_bg arguments
     button_width = 200
     button_height = 50
     spacing = 20  # Space between buttons
@@ -688,33 +672,13 @@ def game_over(difficulty):
     # Load the custom font
     title_font = pygame.font.Font('Font/monogram.ttf', 80)  # Larger font size for "Game Over"
     button_font = pygame.font.Font('Font/monogram.ttf', 40)  # Smaller font size for buttons
-    score_font = pygame.font.Font('Font/monogram.ttf', 50)  # Font size for scores
-
-    # Track the highest score
-    global points, highest_score
-    if 'highest_score' not in globals():
-        highest_score = 0
-    if points > highest_score:
-        highest_score = points
 
     clock = pygame.time.Clock()  # Define clock to control the frame rate
 
     while True:
         # Stop the background at the exact position where the dino bumped
         image_width = ground.get_width()
-
-        # Render the total score
-        total_score_text = score_font.render(f"Total Score: {points}", True, (0, 0, 0))  # Black text
-        total_score_rect = total_score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3.5))
-        SCREEN.blit(total_score_text, total_score_rect)
-
-        # Render the highest score
-        highest_score_text = score_font.render(f"Highest Score: {highest_score}", True, (0, 0, 0))  # Black text
-        highest_score_rect = highest_score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4.5))
-        SCREEN.blit(highest_score_text, highest_score_rect)
-
-        # Render the "Game Over" title
-        text = title_font.render("Game Over", True, (255, 0, 0))  # Red text
+        text = title_font.render("Game Over", True, (255, 0, 0))
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5))
         SCREEN.blit(text, text_rect)
 
@@ -832,140 +796,15 @@ def level_completed():  # Remove x_pos_bg and y_pos_bg arguments
 
         clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
 
-def settings_menu():
-    button_width = 200
-    button_height = 50
-    spacing = 20  # Space between buttons
-    total_width = 2 * button_width + spacing  # Total width of all buttons and spacing
-    start_x = (SCREEN_WIDTH - total_width) // 2  # Starting x-coordinate for the first button
-    button_y = (SCREEN_HEIGHT - button_height) // 2  # Center the buttons vertically
-    unique_id = uuid.uuid4()
-
-    # Load the custom font
-    title_font = pygame.font.Font('Font/monogram.ttf', 80)  # Larger font size for "Settings"
-    button_font = pygame.font.Font('Font/monogram.ttf', 40)  # Smaller font size for buttons
-
-    clock = pygame.time.Clock()  # Define clock to control the frame rate
-
-    while True:
-        SCREEN.fill((0, 0, 0))  # White background for the settings menu
-
-        # Render the "Settings" title
-        text = title_font.render("Settings", True, (255, 255, 255))  # Render the text in black
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
-        SCREEN.blit(text, text_rect)
-
-        # Draw "Resume" button
-        button_home = pygame.Rect(start_x, button_y, button_width, button_height)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_home, border_radius=10)  # Black background
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_home, border_radius=10, width=2)  # Border
-        button_text_home = button_font.render("Home", True, (0, 0, 0))  # White text
-        SCREEN.blit(button_text_home, (start_x + (button_width - button_text_home.get_width()) // 2,
-                                         button_y + (button_height - button_text_home.get_height()) // 2))
-
-        # Render the UUID in the bottom left corner
-        text_uuid = button_font.render("UID: " + str(unique_id), True, (255, 255, 255))  # Convert UUID to string before rendering
-        SCREEN.blit(text_uuid, (20, SCREEN_HEIGHT - text_uuid.get_height() - 20))  # 20px padding from bottom-left corner
-
-        pygame.display.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()  # Exit the program cleanly
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                if button_home.collidepoint(mouse_x, mouse_y):
-                    return  # Resume the game
-              
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return  # Resume the game when Esc is pressed
-
-        clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
-
-def game_manual():
-    # Load the custom font
-    title_font = pygame.font.Font('Font/monogram.ttf', 80)  # Font size for the title
-    text_font = pygame.font.Font('Font/monogram.ttf', 40)  # Font size for the instructions
-
-    # Load arrow icons
-    arrow_up = pygame.image.load(os.path.join("Assets/Icon", "arrow_up.png"))
-    arrow_down = pygame.image.load(os.path.join("Assets/Icon", "arrow_down.png"))
-
-    # Scale the arrow icons
-    arrow_up = pygame.transform.scale(arrow_up, (50, 50))
-    arrow_down = pygame.transform.scale(arrow_down, (50, 50))
-
-    frame_index = 0  # To track the current frame of the background animation
-    frame_delay = 5  # Number of frames to wait before updating the background frame
-    frame_counter = 0  # Counter to control the frame delay
-    clock = pygame.time.Clock()
-
-    while True:
-        # Draw the animated background
-        if frame_counter == 0:
-            frame_index = (frame_index + 1) % len(home_bg_frames)
-        frame_counter = (frame_counter + 1) % frame_delay
-        SCREEN.blit(home_bg_frames[frame_index], (0, 0))
-
-        # Overlay a semi-transparent black rectangle to darken the background
-        dark_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))  # Create a surface the size of the screen
-        dark_overlay.set_alpha(150)  # Set transparency (0 = fully transparent, 255 = fully opaque)
-        dark_overlay.fill((0, 0, 0))  # Fill the surface with black
-        SCREEN.blit(dark_overlay, (0, 0))  # Draw the overlay on the screen
-
-        # Render the title
-        title_text = title_font.render("How to Play", True, (255, 255, 255))  # White text
-        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 100))
-        SCREEN.blit(title_text, title_rect)
-
-        # Render the arrow icons and explanations
-        # Up Arrow (Jump)
-        SCREEN.blit(arrow_up, (SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2 - 100))
-        up_text = text_font.render("Jump", True, (255, 255, 255))  # White text
-        SCREEN.blit(up_text, (SCREEN_WIDTH // 2 - 120, SCREEN_HEIGHT // 2 - 90))
-
-        # Down Arrow (Duck)
-        SCREEN.blit(arrow_down, (SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2))
-        down_text = text_font.render("Duck", True, (255, 255, 255))  # White text
-        SCREEN.blit(down_text, (SCREEN_WIDTH // 2 - 120, SCREEN_HEIGHT // 2 + 10))
-
-        # Render the "Press Enter to Continue" message
-        continue_text = text_font.render("Press Enter to Continue", True, (255, 255, 255))  # White text
-        continue_rect = continue_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150))
-        SCREEN.blit(continue_text, continue_rect)
-
-        # Render the "Press Esc to show settings" message
-        esc_text = text_font.render("Press Esc to show settings", True, (255, 255, 255))  # White text
-        esc_rect = esc_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100))
-        SCREEN.blit(esc_text, esc_rect)
-
-        pygame.display.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:  # Press Enter to proceed
-                    play_button_sound()  # Play sound effect
-                    return  # Exit the manual and go to the game mode selection
-
-        clock.tick(30)
-
 def menu():
-    button_width = 200
-    button_height = 50
-    spacing = 20  # Space between buttons
-    button_x = (SCREEN_WIDTH - button_width) // 2  # Center the buttons horizontally
-    start_y = (SCREEN_HEIGHT - (3 * button_height + 2 * spacing)) // 2  # Center the column vertically
-
+    button_width = 100  # Width of the "Start" button
+    button_height = 30  # Height of the "Start" button
+    button_x = (SCREEN_WIDTH - button_width) // 2
+    button_y = (SCREEN_HEIGHT - button_height) // 2  # Center the button vertically
 
     # Load the custom font
     font = pygame.font.Font('Font/monogram.ttf', 100)  # Font size for "Dinosaur Runner"
-    button_font = pygame.font.Font('Font/monogram.ttf', 40)  # Smaller font size for buttons
-   
+    font.set_bold(True)  # Enable bold text
 
     frame_index = 0  # To track the current frame of the background animation
     frame_delay = 5  # Number of frames to wait before updating the background frame
@@ -987,22 +826,28 @@ def menu():
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.4))  # Adjust position for larger text
         SCREEN.blit(text, text_rect)
 
+        # Reset bold if needed for other text
+        font.set_bold(False)
+
+        # Draw the larger white border for the "Start" button
+        border_width = button_width + 70  # Increase the border width
+        border_height = button_height + 10  # Increase the border height
+        border_x = button_x - 38 # Adjust the x position to center the larger border
+        border_y = button_y - 2  # Adjust the y position to center the larger border
+        button_border = pygame.Rect(border_x, border_y, border_width, border_height)
+
+        # Fill the button background with a color (e.g., white)
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_border, border_radius=10)
+
+        # Draw the border for the button
+        pygame.draw.rect(SCREEN, (255, 255, 255), button_border, width=2, border_radius=10)
 
         # Render the "Start" button text
-        button_start = pygame.Rect(button_x, start_y + button_height + spacing, button_width, button_height)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_start, border_radius=10)  # White background
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_start, border_radius=10, width=2)  # Border
-        button_text_start = button_font.render("Start", True, (0, 0, 0))  # Black text
-        SCREEN.blit(button_text_start, (button_x + (button_width - button_text_start.get_width()) // 2,
-                                         start_y + button_height + spacing + (button_height - button_text_start.get_height()) // 2))
+        button_font = pygame.font.Font('Font/monogram.ttf', 40)  # Smaller font size for the "Start" button
+        button_text = button_font.render("Start", True, (0, 0, 0))  # Render the button text in white
+        SCREEN.blit(button_text, (button_x + (button_width - button_text.get_width()) // 2,
+                                  button_y + (button_height - button_text.get_height()) // 2))
 
-        
-        button_settings = pygame.Rect(button_x, start_y + 2 * (button_height + spacing), button_width, button_height)
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_settings, border_radius=10)  # White background
-        pygame.draw.rect(SCREEN, (255, 255, 255), button_settings, border_radius=10, width=2)  # Border
-        button_text_settings = button_font.render("Settings", True, (0, 0, 0))  # Black text
-        SCREEN.blit(button_text_settings, (button_x + (button_width - button_text_settings.get_width()) // 2,
-                                       start_y + 2 * (button_height + spacing) + (button_height - button_text_settings.get_height()) // 2))
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -1011,13 +856,9 @@ def menu():
                 exit()  # Exit the program cleanly
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if button_start.collidepoint(mouse_x, mouse_y):
+                if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
                     play_button_sound()  # Play sound effect
-                    game_manual()  # Show the game manual
-                    difficulty_menu()  # Call the difficulty menu after the manual
-                elif button_settings.collidepoint(mouse_x, mouse_y):
-                    play_button_sound()                    
-                    settings_menu()  # Open the settings menu when the icon is clicked
+                    difficulty_menu()  # Call the difficulty menu when the button is clicked
 
         clock.tick(30)  # Adjust the frame rate (30 FPS for the game loop)
 
