@@ -622,17 +622,6 @@ def meduim_mode():
                     obstacles[-1].rect.x += random.randint(825, 900)  # Adjust x-axis for spacing
 
 
-                        # if choice3 >= 1:
-                        #     choice = random.randint(0, 2)
-                        #     choice1 = random.randint(0, 2)
-                        #     choice2 = random.randint(0, 2)
-                        #     if choice == 0:
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice]([small_cactus, large_cactus, bird_img][choice]))
-                        #         obstacles[-1].rect.x += random.randint(50, 100)  # Adjust x-axis for spacing
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                        #         obstacles[-1].rect.x += random.randint(500, 600)  # Adjust x-axis for spacing
-                        #         obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice2]([small_cactus, large_cactus, bird_img][choice2]))
-                        #         obstacles[-1].rect.x += random.randint(1300, 1400)  # Adjust x-axis for spacing
 
         for obstacle in obstacles:
             obstacle.draw(SCREEN)
