@@ -384,7 +384,7 @@ def easy_mode():
                 else:
                     choice1 = random.randint(0, 2)
                     obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                    obstacles[-1].rect.x += 650 # Adjust x-axis for spacing
+                    obstacles[-1].rect.x += 0 # Adjust x-axis for spacing
                     if levels >= 4 and chances > 0: 
                         # Level 4: Chances of spawning 3 obstacles
                         choice1 = random.randint(0, 4)
@@ -393,7 +393,7 @@ def easy_mode():
                         else:
                             choice1 = random.randint(0, 2)
                             obstacles.append([SmallCactus, LargeCactus, BirdIndex][choice1]([small_cactus, large_cactus, bird_img][choice1]))
-                            obstacles[-1].rect.x += 1300# Adjust x-axis for spacing
+                            obstacles[-1].rect.x += 500# Adjust x-axis for spacing
 
                     elif levels >= 5 and chances > 0:
                         # Level 5: Chances of spawning 4 obstacles or 3 obstacles with 1pair of obstacles
